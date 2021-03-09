@@ -78,7 +78,6 @@
 				\captionsetup{width=0.9\textwidth}
 				\includegraphics[width=0.6\textwidth]{../images/GRFbeforeConv.png}
 				\caption{A Gaussian Random Field (GRF) with values separated by a desired spacing parameter, or resolution}
-				\label{CFandEncoder}
 			\end{figure}
 		\end{minipage}
 		\vfill%
@@ -107,6 +106,7 @@
 				
 				$\underline{\text{K}}$ : $k \times k$ Matrix representing the kernel for convolution
 	
+				$\underline{\text{C}}$ : $N \times N$ Matrix representing the covariance matrix
 			\end{flushleft}
 		\end{minipage}
 		\vfill%
@@ -183,7 +183,6 @@
 				\captionsetup{width=0.9\textwidth}
 				\includegraphics[width=0.7\textwidth]{../images/GaussianKernel.png}
 				\caption{A 2D Gaussian kernel, $\mu_x = \mu_y = 0, \sigma = 8$}
-				\label{CFandEncoder}
 			\end{figure}
 		\end{minipage}
 		\vfill%
@@ -263,7 +262,6 @@
 				\captionsetup{width=0.9\textwidth}
 				\includegraphics[width=0.6\textwidth]{../images/GRFafterConv.png}
 				\caption{A GRF after convolving a 2D Gaussian kernel}
-				\label{CFandEncoder}
 			\end{figure}
 		\end{minipage}
 		\vfill%
@@ -295,7 +293,7 @@
 
 	\begin{frame}[t]{Ordinary Kriging}
 		\frametitle{Ordinary Kriging}
-		\framesubtitle{Take N-measurements}
+		\framesubtitle{Take $N$-measurements}
 		\hskip-0.75cm
 		\begin{minipage}[t]{0.2\linewidth}\vspace{-0.5cm}
 			\tiny\tableofcontents[currentsection,currentsubsection,hideothersubsections,subsectionstyle=show/shaded]
@@ -307,7 +305,6 @@
 				\captionsetup{width=0.9\textwidth}
 				\includegraphics[width=0.6\textwidth]{../images/MeasurementsOnField.png}
 				\caption{Some measurements taken at various points on the field}
-				\label{CFandEncoder}
 			\end{figure}
 		\end{minipage}
 		\vfill%
@@ -347,9 +344,10 @@
 				\end{array}\right]
 			\end{equation}
 			A Gaussian variogram model can be selected among other
-			\begin{equation}
+			\begin{equation}\label{eq:GaussianModelVariogram}
 				\gamma(h) = (s-n)\bigg(1-e^{-\big(\frac{h^2}{r^2a}\big)} + n\bigg)
 			\end{equation}
+			\textit{but} coefficients, $s, n, r^a$ must first be solved for.
 		\end{minipage}
 		\vfill%
 	\end{frame}
@@ -381,24 +379,166 @@
 		\vfill%
 	\end{frame}
 
+	\subsection{Fitting the Variogram}
 	\begin{frame}[t]{Ordinary Kriging}
 	\frametitle{Ordinary Kriging}
 	\framesubtitle{Fitting $\underline{\text{E}}$ to $\hat{\underline{\text{E}}}$}
-	\hskip-0.75cm
-	\begin{minipage}[t]{0.2\linewidth}\vspace{-0.5cm}
-		\tiny\tableofcontents[currentsection,currentsubsection,hideothersubsections,subsectionstyle=show/shaded]
-	\end{minipage}
-	\hfill%
-	\begin{minipage}[t]{0.86\linewidth}\vspace{-0.5cm}
-		Least-squares \textit{can} be used for fitting
-		\begin{equation}
-			\underline{\text{h}} = \left[\begin{array}{cccc}
-				
-			\end{array}\right]
-		\end{equation}
-	\end{minipage}
-	\vfill%
-\end{frame}
+		\hskip-0.75cm
+		\begin{minipage}[t]{0.2\linewidth}\vspace{-0.5cm}
+			\tiny\tableofcontents[currentsection,currentsubsection,hideothersubsections,subsectionstyle=show/shaded]
+		\end{minipage}
+		\hfill%
+		\begin{minipage}[t]{0.86\linewidth}\vspace{-0.5cm}
+			Least-squares (LS) \textit{can} be used for fitting. The lag-vector is
+			\begin{equation}
+				\underline{\text{h}} = \left[\begin{array}{cccc}
+					d_{xy} & 2d_{xy} & \dots & Nd_{xy}
+				\end{array}\right]^\text{T}
+			\end{equation}
+			Then, the following $N \times 3$ matrix may be formed with a 3rd-order Taylor approximation
+			\begin{equation}
+				\underline{\text{H}}=
+				\left[\begin{array}{ccc}
+				\underline{\text{h}}^2 & -\underline{\text{h}}^4 & \underline{1}
+				\end{array}\right]
+			\end{equation}
+			Now, apply LS
+			\begin{equation}
+				\underbrace{\hat{\underline{\text{x}}}}_{3 \times 1} = (\underbrace{\underline{\text{H}}^T\underline{\text{H}}}_{3 \times 3})^{-1}\underline{\text{H}}^\text{T}\hat{\underline{\text{E}}}
+			\end{equation}
+			Now the \textbf{sill}, the \textbf{range}, and the \textbf{nugget} coefficients can be solved for because we have 3 equations and 3 unknowns (assuming \textit{good} measurements)
+		\end{minipage}
+		\vfill%
+	\end{frame}
+
+	\begin{frame}[t]{Ordinary Kriging}
+		\frametitle{Ordinary Kriging}
+		\framesubtitle{Fitting $\underline{\text{E}}$ to $\hat{\underline{\text{E}}}$}
+		\hskip-0.75cm
+		\begin{minipage}[t]{0.2\linewidth}\vspace{-0.5cm}
+			\tiny\tableofcontents[currentsection,currentsubsection,hideothersubsections,subsectionstyle=show/shaded]
+		\end{minipage}
+		\hfill%
+		\begin{minipage}[t]{0.86\linewidth}\vspace{-0.5cm}
+			The system of equations is as follows
+			\begin{align}
+				s &= (r^2a)\hat{\underline{\text{x}}}_0 + n\\
+				n &= \hat{\underline{\text{x}}}_2 + n\\
+				(r^2a) &= \frac{\hat{\underline{\text{x}}}_0}{2\hat{\underline{\text{x}}}_1}
+			\end{align}
+			Now, equation~\ref{eq:GaussianModelVariogram},
+			\begin{equation*}
+			\gamma(h) = (s-n)\bigg(1-e^{-\big(\frac{h^2}{r^2a}\big)} + n\bigg)
+			\end{equation*}
+			can be used in forming the covariance matrix, $\underline{\text{C}}$
+		\end{minipage}
+		\vfill%
+	\end{frame}
+
+	\begin{frame}[t]{Ordinary Kriging}
+		\frametitle{Ordinary Kriging}
+		\framesubtitle{Fitting $\underline{\text{E}}$ to $\hat{\underline{\text{E}}}$}
+		\hskip-0.75cm
+		\begin{minipage}[t]{0.2\linewidth}\vspace{-0.5cm}
+			\tiny\tableofcontents[currentsection,currentsubsection,hideothersubsections,subsectionstyle=show/shaded]
+		\end{minipage}
+		\hfill%
+		\begin{minipage}[t]{0.86\linewidth}\vspace{-0.5cm}
+			\begin{figure}[t]
+				\centering
+				\captionsetup{width=0.9\textwidth}
+				\includegraphics[width=\textwidth]{../images/fittingE.png}
+				\caption{A Gaussian variogram model fitted to an Empirical variogram}
+			\end{figure}
+		\end{minipage}
+		\vfill%
+	\end{frame}
+	
+	\subsection{The Covariance Matrix}
+	\begin{frame}[t]{Ordinary Kriging}
+		\frametitle{Ordinary Kriging}
+		\framesubtitle{The Covariance Matrix}
+		\hskip-0.75cm
+		\begin{minipage}[t]{0.2\linewidth}\vspace{-0.5cm}
+			\tiny\tableofcontents[currentsection,currentsubsection,hideothersubsections,subsectionstyle=show/shaded]
+		\end{minipage}
+		\hfill%
+		\begin{minipage}[t]{0.86\linewidth}\vspace{-0.5cm}
+			The covariance matrix $\underline{\text{C}}$
+			\begin{equation}
+				\sum_{i=0}^{N}
+					\sum_{j=0}^{N}
+						\text{C}_{i,j}=\gamma(h) \: | \: h=||\underline{\text{s}}_i - \underline{\text{s}}_j||
+			\end{equation}
+		\end{minipage}
+		\vfill%
+	\end{frame}
+
+	\subsection{Predicting the Field}
+	\begin{frame}[t]{Ordinary Kriging}
+		\frametitle{Ordinary Kriging}
+		\framesubtitle{Predicting the Field}
+		\hskip-0.75cm
+		\begin{minipage}[t]{0.2\linewidth}\vspace{-0.5cm}
+			\tiny\tableofcontents[currentsection,currentsubsection,hideothersubsections,subsectionstyle=show/shaded]
+		\end{minipage}
+		\hfill%
+		\begin{minipage}[t]{0.86\linewidth}\vspace{-0.5cm}
+			The estimate is formed as follows,
+			\begin{align*}
+				\forall \underline{p}_i &\in \underline{\text{Z}}_\text{Field}\\
+				& \underline{\text{d}}_i = 
+				\left[\begin{array}{cccc}
+					\gamma(||\underline{\text{s}}_0 - \underline{\text{p}}_i||) & \dots & \gamma(||\underline{\text{s}}_{N-1} - \underline{\text{p}}_i||) & \underline{1}
+				\end{array}\right]^\text{T}\\
+				& \left[\begin{array}{c}
+				\lambda_{\underline{\text{p}}_i}\\
+				\eta_{\underline{\text{p}}_i}
+				\end{array}\right]
+				=
+				\left[\begin{array}{cc}
+				\underline{\text{C}}^{-1} & \underline{1}\\
+				\underline{1}^\text{T} & 0
+				\end{array}\right]
+				\left[\begin{array}{c}
+				\underline{\text{d}}_\underline{\text{p}_i}\\
+				1
+				\end{array}\right]\\
+				& \hat{\underline{\text{Z}}}(\underline{\text{p}_i}) = \left[\begin{array}{ccc}
+				\underline{\text{Z}}(\underline{\text{s}}_0) & \dots & \underline{\text{Z}}(\underline{\text{s}}_{N-1})
+				\end{array}\right]^\text{T}
+				\lambda_{\underline{\text{p}}_i}\\
+				&\text{var}(\hat{\underline{\text{Z}}}(\underline{\text{p}_i})) = 
+				\left[\begin{array}{cc}
+				\underline{\text{d}}_{\underline{\text{p}}_i} & 1
+				\end{array}\right]
+				\left[\begin{array}{c}
+				\lambda_{\underline{\text{p}}_i}\\
+				\eta_{\underline{\text{p}}_i}
+				\end{array}\right]
+			\end{align*}
+		\end{minipage}
+		\vfill%
+	\end{frame}
+
+	\begin{frame}[t]{Ordinary Kriging}
+		\frametitle{Ordinary Kriging}
+		\framesubtitle{Predicting the Field}
+		\hskip-0.75cm
+		\begin{minipage}[t]{0.2\linewidth}\vspace{-0.5cm}
+			\tiny\tableofcontents[currentsection,currentsubsection,hideothersubsections,subsectionstyle=show/shaded]
+		\end{minipage}
+		\hfill%
+		\begin{minipage}[t]{0.86\linewidth}\vspace{-0.5cm}
+			\begin{figure}[t]
+				\centering
+				\captionsetup{width=\textwidth}
+				\includegraphics[width=\textwidth]{../images/estimatedField.png}
+				\caption{The estimated field (left) and the true-field with measurements (right)}
+			\end{figure}
+		\end{minipage}
+		\vfill%
+	\end{frame}
 	%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 	% Section: References
 	%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
