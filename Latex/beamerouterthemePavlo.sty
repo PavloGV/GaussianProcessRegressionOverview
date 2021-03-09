@@ -1,0 +1,26 @@
+\mode<presentation>
+
+% Frame title
+\defbeamertemplate*{frametitle}{Pavlo}[1][]
+{
+\vskip1cm%
+  \begin{beamercolorbox}[wd=\paperwidth,ht=0.0cm]{frametitle}
+  \begin{tikzpicture}
+  \useasboundingbox[fill=white](0,0) rectangle(\the\paperwidth,1.0);
+  %\fill[orange] (0,0) rectangle(.5,2);
+  \fill[purple!50!purple!80] (1.8,0.125) rectangle(\the\paperwidth,2); 
+  
+  \hskip0.125cm%
+  \includegraphics[width=1.575cm]{./../images/ucsc-seal.jpg}
+  
+   \ifx\insertframesubtitle\@empty%
+      {\node[anchor=west, white,font=\LARGE] at (0.25,0.85){\insertframetitle};}
+      \else%
+      {\node[anchor= west, white,font=\Large] at (0.0,1.25){\insertframetitle};%
+       \node[anchor= west, white,font=\LARGE] at (0.25,0.5){\insertframesubtitle};}%
+      \fi
+  \end{tikzpicture}
+  \end{beamercolorbox}
+}
+
+\mode<all>

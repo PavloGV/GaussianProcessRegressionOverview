@@ -1,0 +1,46 @@
+\mode<presentation>
+
+\setbeamertemplate{background}{
+  \begin{tikzpicture}
+  \useasboundingbox (0,0) rectangle(\the\paperwidth,\the\paperheight);
+  \fill[color=white] (0,2) rectangle (\the\paperwidth,\the\paperheight);
+  \fill[color=purple!50!purple!80] (0,0.5\paperheight)
+   rectangle(\the\paperwidth,0.675\paperheight);
+  \ifnum\thepage>1\relax%
+   \fill[white,opacity=1] (0,0) rectangle(\the\paperwidth,\the\paperheight);
+   \fi
+  \end{tikzpicture}
+}
+
+% Title page
+\defbeamertemplate*{title page}{Pavlo}[1][]
+{ 
+	\begin{beamercolorbox}[ht=2.25cm]{date}
+		\centering
+		\inserttitlegraphic%
+	\end{beamercolorbox}
+    \begin{beamercolorbox}[wd=\paperwidth, ht=1.5cm, center]{title page header}
+      \usebeamerfont{title}\inserttitle\par%
+    \end{beamercolorbox}%
+	\vskip0.4cm%
+	\begin{beamercolorbox}[wd=\paperwidth, center]{subtitle page header}
+	\usebeamerfont{subtitle}\insertsubtitle%
+	\end{beamercolorbox}%
+	\vskip0.2cm%
+    \begin{beamercolorbox}[wd=\paperwidth,center]{author}
+      \usebeamerfont{author}\insertauthor%
+    \end{beamercolorbox}
+     \vskip0.2cm%
+    \begin{beamercolorbox}[wd=\paperwidth,center]{date}
+      \usebeamerfont{author}\insertdate%
+    \end{beamercolorbox}
+	\vskip0.2cm%
+	\begin{beamercolorbox}[wd=\paperwidth,center]{date}
+	\usebeamerfont{author}\insertinstitute%
+	\end{beamercolorbox}
+	\vskip0.2cm%
+  \vfill
+}
+
+\mode
+<all>
