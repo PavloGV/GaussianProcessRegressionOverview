@@ -58,7 +58,6 @@
 			
 		\end{minipage}
 	\vfill%
-		
 	\end{frame}
 
 	%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -77,13 +76,12 @@
 			\begin{figure}[t]
 				\centering
 				\captionsetup{width=0.9\textwidth}
-				\includegraphics[width=0.5\textwidth]{../images/GRFbeforeConv.png}
+				\includegraphics[width=0.6\textwidth]{../images/GRFbeforeConv.png}
 				\caption{A Gaussian Random Field (GRF) with values separated by a desired spacing parameter, or resolution}
 				\label{CFandEncoder}
 			\end{figure}
 		\end{minipage}
 		\vfill%
-		
 	\end{frame}
 
 	\begin{frame}[t]{Building a Field}
@@ -112,12 +110,12 @@
 			\end{flushleft}
 		\end{minipage}
 		\vfill%
-		
 	\end{frame}
 	
+	\subsection{Gaussian Kernel}
 	\begin{frame}[t]{Building a Field}
 		\frametitle{Building a Field}
-		\framesubtitle{Gaussian Random Field (GRF)}
+		\framesubtitle{Gaussian Kernel}
 		\hskip-0.75cm
 		\begin{minipage}[t]{0.2\linewidth}\vspace{-0.5cm}
 			\tiny\tableofcontents[currentsection,currentsubsection,hideothersubsections,subsectionstyle=show/shaded]
@@ -125,18 +123,50 @@
 		\hfill%
 		\begin{minipage}[t]{0.86\linewidth}\vspace{-0.5cm}
 			\begin{flushleft}
-				A kernel is required to smooth the GRF to better describe some phenomenon. A 2D Gaussian function can be chosen for a Gaussian kernel
-				\begin{equation}
-					g(x, y) = \frac{1}{2\pi\sigma^2}e^{-\bigg(\frac{(x-\mu_x)^2 + (y-\mu_y)^2}{2\sigma^2}\bigg)}
-				\end{equation}
-				To form the Gaussian kernel
-				\begin{equation}
-					
-				\end{equation}
+				\begin{itemize}
+					\item A kernel is required to smooth the GRF to better describe some phenomenon. A 2D Gaussian function can be chosen for a Gaussian kernel,
+					\begin{equation}
+						g(x, y) = \frac{1}{2\pi\sigma^2}e^{-\Big(\frac{(x-\mu_x)^2 + (y-\mu_y)^2}{2\sigma^2}\Big)}
+					\end{equation}
+					where $\mu_x$ and $\mu_y$ are the respective means of the distributions, but usually are zero, and $\sigma$ is the standard deviation. \\
+					\item To form the Gaussian kernel:
+					\begin{equation}
+						\underline{K} = \frac{1}{\sum_{i=0}^{k=1}\sum_{j=0}^{k=1} K_{i, j}}\Bigg(\sum_{i=0}^{k=1}\sum_{j=0}^{k=1} K_{i, j} = g(j, i)\Bigg)
+					\end{equation}
+				\end{itemize}
+			\end{flushleft}
+		\end{minipage}
+		\vfill%	
+	\end{frame}
+
+	\subsection{Gaussian Kernel}
+	\begin{frame}[t]{Building a Field}
+		\frametitle{Building a Field}
+		\framesubtitle{Gaussian Kernel}
+		\hskip-0.75cm
+		\begin{minipage}[t]{0.2\linewidth}\vspace{-0.5cm}
+			\tiny\tableofcontents[currentsection,currentsubsection,hideothersubsections,subsectionstyle=show/shaded]
+		\end{minipage}
+		\hfill%
+		\begin{minipage}[t]{0.86\linewidth}\vspace{-0.5cm}
+			\begin{flushleft}
+				A pseudo code implementation for the Gaussian kernel may be as follows:
+				\begin{algorithm}[H]
+					\begin{algorithmic}[1]
+						\STATE \text{sum} = 0
+						\FOR{$i=0$ to $k-1$}
+						\FOR{$j=0$ to $k-1$}
+						\STATE $\underline{K}_{i, j} = g(j, i)$
+						\STATE $\text{sum} += \underline{K}_{i, j}$
+						\ENDFOR
+						\ENDFOR
+						\STATE $\underline{K}_{i, j} /= \text{sum}$
+					\end{algorithmic}
+					\label{alg:seq}
+				\end{algorithm}
 			\end{flushleft}
 		\end{minipage}
 		\vfill%
-		
 	\end{frame}
 	
 	\begin{frame}[t]{Building a Field}
@@ -151,71 +181,57 @@
 			\begin{figure}[t]
 				\centering
 				\captionsetup{width=0.9\textwidth}
-				\includegraphics[width=0.5\textwidth]{../images/GRFafterConv.png}
+				\includegraphics[width=0.7\textwidth]{../images/GaussianKernel.png}
+				\caption{A 2D Gaussian kernel, $\mu_x = \mu_y = 0, \sigma = 8$}
+				\label{CFandEncoder}
+			\end{figure}
+		\end{minipage}
+		\vfill%
+	\end{frame}
+	
+	\subsection{2D Convolution}
+	\begin{frame}[t]{Building a Field}
+	\frametitle{Building a Field}
+	\framesubtitle{2D Convolution}
+	\hskip-0.75cm
+	\begin{minipage}[t]{0.2\linewidth}\vspace{-0.5cm}
+		\tiny\tableofcontents[currentsection,currentsubsection,hideothersubsections,subsectionstyle=show/shaded]
+	\end{minipage}
+	\hfill%
+	\begin{minipage}[t]{0.86\linewidth}\vspace{-0.5cm}
+		\begin{flushleft}
+			\begin{itemize}
+				The Gaussian kernel can be convolved with the GRF
+				CHANGE THIS |||||||||||
+				\begin{equation}
+				\underline{K} = \frac{1}{\sum_{i=0}^{k=1}\sum_{j=0}^{k=1} K_{i, j}}\Bigg(\sum_{i=0}^{k=1}\sum_{j=0}^{k=1} K_{i, j} = g(j, i)\Bigg)
+				\end{equation}
+				CHANGE THIS |||||||||||
+			\end{itemize}
+		\end{flushleft}
+	\end{minipage}
+	\vfill%	
+	\end{frame}
+	
+	\begin{frame}[t]{Building a Field}
+		\frametitle{Building a Field}
+		\framesubtitle{Gaussian Random Field (GRF)}
+		\hskip-0.75cm
+		\begin{minipage}[t]{0.2\linewidth}\vspace{-0.5cm}
+			\tiny\tableofcontents[currentsection,currentsubsection,hideothersubsections,subsectionstyle=show/shaded]
+		\end{minipage}
+		\hfill%
+		\begin{minipage}[t]{0.86\linewidth}\vspace{-0.5cm}
+			\begin{figure}[t]
+				\centering
+				\captionsetup{width=0.9\textwidth}
+				\includegraphics[width=0.6\textwidth]{../images/GRFafterConv.png}
 				\caption{A GRF after convolving a 2D Gaussian kernel}
 				\label{CFandEncoder}
 			\end{figure}
 		\end{minipage}
 		\vfill%
-		
 	\end{frame}
-
-	%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-	% Section: Supplemental Material
-	%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-	
-	\section{Supplemental Material}
-	\begin{frame}[t]{Supplemental Material}
-		\frametitle{Supplemental Material}
-		\framesubtitle{Guidance Navigation and Control: LTP}
-		
-		\hskip-0.75cm
-		\begin{minipage}[t]{0.2\linewidth}\vspace{-0.5cm}
-			\tiny\tableofcontents[currentsection,currentsubsection,hideothersubsections,subsectionstyle=show/shaded]
-			\vfill%
-		\end{minipage}
-		\hfill%
-		\begin{minipage}[t]{0.86\linewidth}\vspace{-0.5cm}
-			Conversion of GPS latitude, longitude, altitude to Earth-Centered Earth-Fixed (ECEF) to NED in a LTP:
-			\begin{equation}
-			\underline{p}^\text{ECEF} =
-			(r_\text{Earth} - a) 
-			\begin{bmatrix}
-			\cos(\phi) \cos(\lambda)\\
-			\cos(\phi) \sin(\lambda)\\
-			\sin(\phi)\\
-			\end{bmatrix}
-			\end{equation}
-			
-			\begin{equation} 
-			\underline{\text{R}} = 
-			\begin{bmatrix}
-			-\sin(\phi)\cos(\lambda) & -\sin(\lambda) & -\cos(\phi)\cos(\lambda) \\
-			-\sin(\phi)\sin(\lambda) & \cos(\lambda) & -\cos(\phi)\sin(\lambda) \\
-			\cos(\phi) & 0 & -\sin(\phi)
-			\end{bmatrix}
-			\end{equation}
-			
-			\begin{equation}
-			\underline{p}^\text{NED} = \underline{\text{R}}^\text{T}(\underline{p}^\text{ECEF} - \underline{p}^\text{Ref})
-			\end{equation}
-			
-			\begin{equation}
-			\underline{\text{W}}_i^\text{LTP} = 
-			\begin{bmatrix}
-			\underline{p}_2^\text{NED} & 
-			\underline{p}_1^\text{NED}
-			\end{bmatrix}
-			=
-			\begin{bmatrix}
-			E_i & N_i 
-			\end{bmatrix}
-			\end{equation}
-			\vfill%
-		\end{minipage}
-		
-	\end{frame}
-
 
 	%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 	% Section: References
