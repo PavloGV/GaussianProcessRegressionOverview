@@ -270,24 +270,135 @@
 	\end{frame}
 
 	%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-	% Section: Kriging
+	% Section: OrdinaryKriging
 	%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-	\section{Kriging}
-	\begin{frame}[t]{Kriging}
-		\frametitle{Kriging}
+	\section{Ordinary Kriging}
+	\begin{frame}[t]{Ordinary Kriging}
+		\frametitle{Ordinary Kriging}
 		\hskip-0.75cm
 		\begin{minipage}[t]{0.2\linewidth}\vspace{-0.5cm}
 			\tiny\tableofcontents[currentsection,currentsubsection,hideothersubsections,subsectionstyle=show/shaded]
 		\end{minipage}
 		\hfill%
 		\begin{minipage}[t]{0.86\linewidth}\vspace{-0.5cm}
+			We use Ordinary Kriging, a form of Gaussian Process Regression (GPR) to estimate a field that is sparsely sampled
 			\begin{itemize}
-				
+				\item Take $N$ measurements
+				\item Form an Empirical/Experimental Semi-variogram $\underline{\text{E}}(h)$
+				\item Fit a model of the variogram to the Empirical/Experimental Semi-variogram $\underline{\hat{\text{E}}}(h)$
+				\item Form a covariance matrix, $\underline{\text{C}}$ based on $\hat{\underline{\text{E}}}(h)$
+				\item Run the Kriging prediction to generate the field esimtate
 			\end{itemize}
 		\end{minipage}
 		\vfill%
 	\end{frame}
 
+	\begin{frame}[t]{Ordinary Kriging}
+		\frametitle{Ordinary Kriging}
+		\framesubtitle{Take N-measurements}
+		\hskip-0.75cm
+		\begin{minipage}[t]{0.2\linewidth}\vspace{-0.5cm}
+			\tiny\tableofcontents[currentsection,currentsubsection,hideothersubsections,subsectionstyle=show/shaded]
+		\end{minipage}
+		\hfill%
+		\begin{minipage}[t]{0.86\linewidth}\vspace{-0.5cm}
+			\begin{figure}[t]
+				\centering
+				\captionsetup{width=0.9\textwidth}
+				\includegraphics[width=0.6\textwidth]{../images/MeasurementsOnField.png}
+				\caption{Some measurements taken at various points on the field}
+				\label{CFandEncoder}
+			\end{figure}
+		\end{minipage}
+		\vfill%
+	\end{frame}
+
+	\begin{frame}[t]{Ordinary Kriging}
+		\frametitle{Ordinary Kriging}
+		\framesubtitle{Form an Empirical Semi-variogram $\hat{\underline{\text{E}}}$}
+		\hskip-0.75cm
+		\begin{minipage}[t]{0.2\linewidth}\vspace{-0.5cm}
+			\tiny\tableofcontents[currentsection,currentsubsection,hideothersubsections,subsectionstyle=show/shaded]
+		\end{minipage}
+		\hfill%
+		\begin{minipage}[t]{0.86\linewidth}\vspace{-0.5cm}
+			%%%% TODO: ADD FULL CITATION %%%%
+			From Yonan 2019,
+			\begin{align*}
+				\forall \underline{\text{s}}_i,& \text{Z}(\underline{\text{s}}_i) \in \underline{\text{O}}:\\
+				& \hat{\gamma}(h) \leftarrow \underline{\text{s}}_i, \text{Z}(\underline{\text{s}}_i)
+			\end{align*}
+			where 
+			\begin{equation*}
+				\underline{\text{s}}_i = 
+				\left[\begin{array}{cc}
+					\text{East}_i & \text{North}_i
+				\end{array}\right]
+			\end{equation*}
+			and
+			\begin{equation}\label{}
+			\underline{\text{O}}
+			=
+			\left[\begin{array}{c}
+				\text{Z}(\underline{\text{s}}_0)\\
+				\text{Z}(\underline{\text{s}}_1)\\
+				\vdots\\
+				\text{Z}(\underline{\text{s}}_2)
+				\end{array}\right]
+			\end{equation}
+			A Gaussian variogram model can be selected among other
+			\begin{equation}
+				\gamma(h) = (s-n)\bigg(1-e^{-\big(\frac{h^2}{r^2a}\big)} + n\bigg)
+			\end{equation}
+		\end{minipage}
+		\vfill%
+	\end{frame}
+
+	\begin{frame}[t]{Ordinary Kriging}
+	\frametitle{Ordinary Kriging}
+	\framesubtitle{Form an Empirical Semi-variogram $\hat{\underline{\text{E}}}$}
+		\hskip-0.75cm
+		\begin{minipage}[t]{0.2\linewidth}\vspace{-0.5cm}
+			\tiny\tableofcontents[currentsection,currentsubsection,hideothersubsections,subsectionstyle=show/shaded]
+		\end{minipage}
+		\hfill%
+		\begin{minipage}[t]{0.86\linewidth}\vspace{-0.5cm}
+			The Empirical variogram assumes the following form,
+			\begin{equation}
+				\hat{\gamma}(h \pm \delta) := \frac{1}{2|N(h\pm\delta)|}\sum_{(i,j) \in N(h\pm\delta)}|\text{Z}(\underline{\text{s}}_i) - \text{Z}(\underline{\text{s}}_j)|^2
+			\end{equation}
+			and
+			\begin{equation}
+				 \hat{\underline{\text{E}}} = 
+				 \left[\begin{array}{c}
+					 \hat{\gamma}(\delta)\\
+					 \hat{\gamma}(2*\delta)\\
+					 \vdots\\
+					 \hat{\gamma}(N*\delta)
+				 \end{array}\right]
+			\end{equation}
+		\end{minipage}
+		\vfill%
+	\end{frame}
+
+	\begin{frame}[t]{Ordinary Kriging}
+	\frametitle{Ordinary Kriging}
+	\framesubtitle{Fitting $\underline{\text{E}}$ to $\hat{\underline{\text{E}}}$}
+	\hskip-0.75cm
+	\begin{minipage}[t]{0.2\linewidth}\vspace{-0.5cm}
+		\tiny\tableofcontents[currentsection,currentsubsection,hideothersubsections,subsectionstyle=show/shaded]
+	\end{minipage}
+	\hfill%
+	\begin{minipage}[t]{0.86\linewidth}\vspace{-0.5cm}
+		Least-squares \textit{can} be used for fitting
+		\begin{equation}
+			\underline{\text{h}} = \left[\begin{array}{cccc}
+				
+			\end{array}\right]
+		\end{equation}
+	\end{minipage}
+	\vfill%
+\end{frame}
 	%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 	% Section: References
 	%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
