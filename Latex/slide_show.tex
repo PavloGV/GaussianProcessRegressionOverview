@@ -131,15 +131,15 @@
 					where $\mu_x$ and $\mu_y$ are the respective means of the distributions, but usually are zero, and $\sigma$ is the standard deviation. \\
 					\item To form the Gaussian kernel:
 					\begin{equation}
-						\underline{K} = \frac{1}{\sum_{i=0}^{k=1}\sum_{j=0}^{k=1} K_{i, j}}\Bigg(\sum_{i=0}^{k=1}\sum_{j=0}^{k=1} K_{i, j} = g(j, i)\Bigg)
+					\underline{\text{K}} = \frac{1}{\sum_{i=0}^{k-1}\sum_{j=0}^{k-1} \text{K}_{i, j}}\Bigg(\sum_{i=0}^{k-1}\sum_{j=0}^{k-1} \text{K}_{i, j} = g(j, i)\Bigg)
 					\end{equation}
+					where $\text{K}_{i,j}$ is an element of $\underline{\text{K}}$
 				\end{itemize}
 			\end{flushleft}
 		\end{minipage}
 		\vfill%	
 	\end{frame}
 
-	\subsection{Gaussian Kernel}
 	\begin{frame}[t]{Building a Field}
 		\frametitle{Building a Field}
 		\framesubtitle{Gaussian Kernel}
@@ -150,7 +150,7 @@
 		\hfill%
 		\begin{minipage}[t]{0.86\linewidth}\vspace{-0.5cm}
 			\begin{flushleft}
-				A pseudo code implementation for the Gaussian kernel may be as follows:
+				A pseudo code implementation for the Gaussian kernel may assume the following form:
 				\begin{algorithm}[H]
 					\begin{algorithmic}[1]
 						\STATE \text{sum} = 0
@@ -171,7 +171,7 @@
 	
 	\begin{frame}[t]{Building a Field}
 		\frametitle{Building a Field}
-		\framesubtitle{Gaussian Random Field (GRF)}
+		\framesubtitle{Gaussian Kernel}
 		\hskip-0.75cm
 		\begin{minipage}[t]{0.2\linewidth}\vspace{-0.5cm}
 			\tiny\tableofcontents[currentsection,currentsubsection,hideothersubsections,subsectionstyle=show/shaded]
@@ -200,17 +200,53 @@
 	\hfill%
 	\begin{minipage}[t]{0.86\linewidth}\vspace{-0.5cm}
 		\begin{flushleft}
-			\begin{itemize}
-				The Gaussian kernel can be convolved with the GRF
-				CHANGE THIS |||||||||||
-				\begin{equation}
-				\underline{K} = \frac{1}{\sum_{i=0}^{k=1}\sum_{j=0}^{k=1} K_{i, j}}\Bigg(\sum_{i=0}^{k=1}\sum_{j=0}^{k=1} K_{i, j} = g(j, i)\Bigg)
-				\end{equation}
-				CHANGE THIS |||||||||||
-			\end{itemize}
+			The Gaussian kernel can be convolved with the GRF
+			\begin{equation}
+				\underline{\text{Z}}_{\text{new}} = \sum_{p=0}^{m_{\underline{\text{Z}}}-1}\sum_{q=0}^{n_{\underline{\text{Z}}}-1}\bigg(
+				\underbrace{\underline{\text{Z}}_{\text{new},p,q} = \sum_{u=0}^{m_{\underline{\text{K}}}-1}\sum_{v=0}^{n_{\underline{\text{K}}}-1}\big(\underline{\text{K}}_{u,v} \cdot {\underline{\text{Z}}}_{p+u-c, q+v-c}\big)}_\text{Element-wise convolution}
+				\bigg)
+			\end{equation}
 		\end{flushleft}
 	\end{minipage}
 	\vfill%	
+	\end{frame}
+
+	\begin{frame}[t]{Building a Field}
+		\frametitle{Building a Field}
+		\framesubtitle{2D Convolution}
+		\hskip-0.75cm
+		\begin{minipage}[t]{0.2\linewidth}\vspace{-0.5cm}
+			\tiny\tableofcontents[currentsection,currentsubsection,hideothersubsections,subsectionstyle=show/shaded]
+		\end{minipage}
+		\hfill%
+		\begin{minipage}[t]{0.86\linewidth}\vspace{-0.5cm}
+			\begin{flushleft}
+				Pseudo-code for 2D convolution with \textbf{bounds checking}
+				\begin{algorithm}[H]
+					\begin{algorithmic}[1]
+						\FOR{$p=0$ to $m_{\underline{\text{Z}}}-1$}
+							\FOR{$q=0$ to $n_{\underline{\text{Z}}}-1$}
+								\FOR{$p=0$ to $m_{\underline{\text{K}}}-1$}
+									\FOR{$v=0$ to $n_{\underline{\text{K}}}-1$}
+									\IF{$p+u-c < m_{\underline{\text{Z}}}-1$ and $q+v-c < n_{\underline{\text{Z}}}-1$}
+										\IF{$p+u-c \geq 0$ and $q+v-c \geq 0$}
+										\STATE $\underline{\text{Z}}_{\text{new},p,q} = \big(\underline{\text{K}}_{u,v} \cdot {\underline{\text{Z}}}_{p+u-c, q+v-c}\big)$
+									\ENDIF
+									\ENDIF
+									\ENDFOR
+								\ENDFOR
+							\ENDFOR
+						\ENDFOR
+						\STATE $\underline{\text{Z}}_{\text{new}} = \underline{\text{Z}}_{\text{new}} - \text{min}(\underline{\text{Z}}_{\text{new}})$
+						\STATE $\underline{\text{Z}}_{\text{new}} = \underline{\text{Z}}_{\text{new}} \div \text{min}(\underline{\text{Z}}_{\text{new}})$
+						\STATE $\underline{\text{Z}}_{\text{new}} = \underline{\text{Z}}_{\text{new}} \times \text{measurement max} - \text{measurement min}$
+						\STATE $\underline{\text{Z}}_{\text{new}} = \underline{\text{Z}}_{\text{new}} + \text{measurement min}$
+					\end{algorithmic}
+					\label{alg:seq}
+				\end{algorithm}
+			\end{flushleft}
+		\end{minipage}
+		\vfill%
 	\end{frame}
 	
 	\begin{frame}[t]{Building a Field}
@@ -229,6 +265,25 @@
 				\caption{A GRF after convolving a 2D Gaussian kernel}
 				\label{CFandEncoder}
 			\end{figure}
+		\end{minipage}
+		\vfill%
+	\end{frame}
+
+	%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+	% Section: Kriging
+	%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+	\section{Kriging}
+	\begin{frame}[t]{Kriging}
+		\frametitle{Kriging}
+		\hskip-0.75cm
+		\begin{minipage}[t]{0.2\linewidth}\vspace{-0.5cm}
+			\tiny\tableofcontents[currentsection,currentsubsection,hideothersubsections,subsectionstyle=show/shaded]
+		\end{minipage}
+		\hfill%
+		\begin{minipage}[t]{0.86\linewidth}\vspace{-0.5cm}
+			\begin{itemize}
+				
+			\end{itemize}
 		\end{minipage}
 		\vfill%
 	\end{frame}
